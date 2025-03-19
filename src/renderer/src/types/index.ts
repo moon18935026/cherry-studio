@@ -96,6 +96,7 @@ export type Topic = {
   messages: Message[]
   pinned?: boolean
   prompt?: string
+  isNameManuallyEdited?: boolean
 }
 
 export type User = {
@@ -115,6 +116,9 @@ export type Provider = {
   models: Model[]
   enabled?: boolean
   isSystem?: boolean
+  isAuthed?: boolean
+  rateLimit?: number
+  isNotSupportArrayContent?: boolean
 }
 
 export type ProviderType = 'openai' | 'anthropic' | 'gemini' | 'qwenlm' | 'azure-openai'
@@ -253,6 +257,8 @@ export interface KnowledgeBase {
   chunkSize?: number
   chunkOverlap?: number
   threshold?: number
+  rerankModel?: Model
+  topN?: number
 }
 
 export type KnowledgeBaseParams = {
@@ -264,6 +270,9 @@ export type KnowledgeBaseParams = {
   baseURL: string
   chunkSize?: number
   chunkOverlap?: number
+  rerankModel?: string
+  rerankModelProvider?: string
+  topN?: number
 }
 
 export type GenerateImageParams = {
@@ -359,7 +368,8 @@ export interface MCPConfig {
 }
 
 export interface MCPToolResponse {
-  tool: MCPTool
-  status: string
+  id: string // tool call id, it should be unique
+  tool: MCPTool // tool info
+  status: string // 'invoking' | 'done'
   response?: any
 }
