@@ -3,7 +3,7 @@ import { SEARCH_SUMMARY_PROMPT } from '@renderer/config/prompts'
 import i18n from '@renderer/i18n'
 import store from '@renderer/store'
 import { setGenerating } from '@renderer/store/runtime'
-import { Assistant, Message, Model, Provider, Suggestion } from '@renderer/types'
+import { Assistant, MCPTool, Message, Model, Provider, Suggestion } from '@renderer/types'
 import { formatMessageError, isAbortError } from '@renderer/utils/error'
 import { cloneDeep, findLast, isEmpty } from 'lodash'
 
@@ -97,13 +97,21 @@ export async function fetchChatCompletion({
       }
     }
 
-    const allMCPTools = await window.api.mcp.listTools()
+    const lastUserMessage = findLast(messages, (m) => m.role === 'user')
+    // Get MCP tools
+    let mcpTools: MCPTool[] = []
+    const enabledMCPs = lastUserMessage?.enabledMCPs
+
+    if (enabledMCPs && enabledMCPs.length > 0) {
+      const allMCPTools = await window.api.mcp.listTools()
+      mcpTools = allMCPTools.filter((tool) => enabledMCPs.some((mcp) => mcp.name === tool.serverName))
+    }
 
     await AI.completions({
       messages: filterUsefulMessages(messages),
       assistant,
       onFilterMessages: (messages) => (_messages = messages),
-      onChunk: ({ text, reasoning_content, usage, metrics, search, citations, mcpToolResponse }) => {
+      onChunk: ({ text, reasoning_content, usage, metrics, search, citations, mcpToolResponse, generateImage }) => {
         message.content = message.content + text || ''
         message.usage = usage
         message.metrics = metrics
@@ -119,6 +127,15 @@ export async function fetchChatCompletion({
         if (mcpToolResponse) {
           message.metadata = { ...message.metadata, mcpTools: cloneDeep(mcpToolResponse) }
         }
+        if (generateImage && generateImage.images.length > 0) {
+          const existingImages = message.metadata?.generateImage?.images || []
+          generateImage.images = [...existingImages, ...generateImage.images]
+          console.log('generateImage', generateImage)
+          message.metadata = {
+            ...message.metadata,
+            generateImage: generateImage
+          }
+        }
 
         // Handle citations from Perplexity API
         if (isFirstChunk && citations) {
@@ -131,7 +148,7 @@ export async function fetchChatCompletion({
 
         onResponse({ ...message, status: 'pending' })
       },
-      mcpTools: allMCPTools
+      mcpTools: mcpTools
     })
 
     message.status = 'success'
@@ -154,6 +171,7 @@ export async function fetchChatCompletion({
         }
       }
     }
+    console.log('message', message)
   } catch (error: any) {
     if (isAbortError(error)) {
       message.status = 'paused'
@@ -212,7 +230,9 @@ export async function fetchMessagesSummary({ messages, assistant }: { messages: 
   const AI = new AiProvider(provider)
 
   try {
-    return await AI.summaries(filterMessages(messages), assistant)
+    const text = await AI.summaries(filterMessages(messages), assistant)
+    // Remove all quotes from the text
+    return text?.replace(/["']/g, '') || null
   } catch (error: any) {
     return null
   }
