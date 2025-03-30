@@ -53,6 +53,7 @@ export interface SettingsState {
   mathEngine: 'MathJax' | 'KaTeX'
   messageStyle: 'plain' | 'bubble'
   codeStyle: CodeStyleVarious
+  foldDisplayMode: 'expanded' | 'compact'
   gridColumns: number
   gridPopoverTrigger: 'hover' | 'click'
   messageNavigation: 'none' | 'buttons' | 'anchor'
@@ -98,6 +99,8 @@ export interface SettingsState {
   siyuanToken: string | null
   siyuanBoxId: string | null
   siyuanRootPath: string | null
+  maxKeepAliveMinapps: number
+  showOpenedMinappsInSidebar: boolean
 }
 
 export type MultiModelMessageStyle = 'horizontal' | 'vertical' | 'fold' | 'grid'
@@ -135,8 +138,9 @@ const initialState: SettingsState = {
   mathEngine: 'KaTeX',
   messageStyle: 'plain',
   codeStyle: 'auto',
+  foldDisplayMode: 'expanded',
   gridColumns: 2,
-  gridPopoverTrigger: 'hover',
+  gridPopoverTrigger: 'click',
   messageNavigation: 'none',
   webdavHost: '',
   webdavUser: '',
@@ -176,7 +180,9 @@ const initialState: SettingsState = {
   siyuanApiUrl: null,
   siyuanToken: null,
   siyuanBoxId: null,
-  siyuanRootPath: null
+  siyuanRootPath: null,
+  maxKeepAliveMinapps: 3,
+  showOpenedMinappsInSidebar: true
 }
 
 const settingsSlice = createSlice({
@@ -295,6 +301,9 @@ const settingsSlice = createSlice({
     setMathEngine: (state, action: PayloadAction<'MathJax' | 'KaTeX'>) => {
       state.mathEngine = action.payload
     },
+    setFoldDisplayMode: (state, action: PayloadAction<'expanded' | 'compact'>) => {
+      state.foldDisplayMode = action.payload
+    },
     setGridColumns: (state, action: PayloadAction<number>) => {
       state.gridColumns = action.payload
     },
@@ -404,6 +413,12 @@ const settingsSlice = createSlice({
     },
     setDefaultObsidianVault: (state, action: PayloadAction<string>) => {
       state.defaultObsidianVault = action.payload
+    },
+    setMaxKeepAliveMinapps: (state, action: PayloadAction<number>) => {
+      state.maxKeepAliveMinapps = action.payload
+    },
+    setShowOpenedMinappsInSidebar: (state, action: PayloadAction<boolean>) => {
+      state.showOpenedMinappsInSidebar = action.payload
     }
   }
 })
@@ -446,6 +461,7 @@ export const {
   setCodeCollapsible,
   setCodeWrappable,
   setMathEngine,
+  setFoldDisplayMode,
   setGridColumns,
   setGridPopoverTrigger,
   setMessageStyle,
@@ -480,7 +496,9 @@ export const {
   setSiyuanApiUrl,
   setSiyuanToken,
   setSiyuanBoxId,
-  setSiyuanRootPath
+  setSiyuanRootPath,
+  setMaxKeepAliveMinapps,
+  setShowOpenedMinappsInSidebar
 } = settingsSlice.actions
 
 export default settingsSlice.reducer
