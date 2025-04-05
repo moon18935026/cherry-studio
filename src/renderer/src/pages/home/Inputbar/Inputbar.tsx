@@ -182,10 +182,8 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
       }
 
       if (isFunctionCallingModel(model)) {
-        if (!isEmpty(assistant.mcpServers) && !isEmpty(activedMcpServers)) {
-          userMessage.enabledMCPs = activedMcpServers.filter((server) =>
-            assistant.mcpServers?.some((s) => s.id === server.id)
-          )
+        if (!isEmpty(enabledMCPs) && !isEmpty(activedMcpServers)) {
+          userMessage.enabledMCPs = activedMcpServers.filter((server) => enabledMCPs?.some((s) => s.id === server.id))
         }
       }
 
@@ -208,7 +206,6 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
       console.error('Failed to send message:', error)
     }
   }, [
-    activedMcpServers,
     assistant,
     dispatch,
     files,
@@ -219,7 +216,9 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
     resizeTextArea,
     selectedKnowledgeBases,
     text,
-    topic
+    topic,
+    enabledMCPs,
+    activedMcpServers
   ])
 
   const translate = async () => {
