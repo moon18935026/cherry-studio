@@ -59,7 +59,7 @@
       "settings.reasoning_effort.low": "短",
       "settings.reasoning_effort.medium": "中",
       "settings.reasoning_effort.off": "关",
-      "settings.reasoning_effort.tip": "仅支持 OpenAI o-series 和 Anthropic 推理模型",
+      "settings.reasoning_effort.tip": "仅支持 OpenAI o-series、Anthropic、Grok 推理模型",
       "settings.more": "助手设置"
     },
     "auth": {
@@ -277,6 +277,7 @@
       "duplicate": "复制",
       "edit": "编辑",
       "expand": "展开",
+      "collapse": "折叠",
       "footnote": "引用内容",
       "footnotes": "引用内容",
       "fullscreen": "已进入全屏模式，按 F11 退出",
@@ -298,7 +299,12 @@
       "topics": "话题",
       "warning": "警告",
       "you": "用户",
-      "reasoning_content": "已深度思考"
+      "reasoning_content": "已深度思考",
+      "sort": {
+        "pinyin": "按拼音排序",
+        "pinyin.asc": "按拼音升序",
+        "pinyin.desc": "按拼音降序"
+      }
     },
     "docs": {
       "title": "帮助文档"
@@ -550,7 +556,8 @@
       "switch.disabled": "请等待当前回复完成后操作",
       "tools": {
         "completed": "已完成",
-        "invoking": "调用中"
+        "invoking": "调用中",
+        "error": "发生错误"
       },
       "topic.added": "话题添加成功",
       "upgrade.success.button": "重启",
@@ -1027,8 +1034,9 @@
         "argsTooltip": "每个参数占一行",
         "baseUrlTooltip": "远程 URL 地址",
         "command": "命令",
-        "sse": "服务器发送事件(sse)",
-        "stdio": "标准输入/输出(stdio)",
+        "sse": "服务器发送事件 (sse)",
+        "streamableHttp": "可流式传输的HTTP (streamableHttp)",
+        "stdio": "标准输入/输出 (stdio)",
         "inMemory": "内存",
         "config_description": "配置模型上下文协议服务器",
         "deleteError": "删除服务器失败",
@@ -1082,10 +1090,23 @@
         "url": "URL",
         "editMcpJson": "编辑 MCP 配置",
         "installHelp": "获取安装帮助",
+        "tabs": {
+          "general": "通用",
+          "tools": "工具",
+          "prompts": "提示",
+          "resources": "资源"
+        },
         "tools": {
-          "inputSchema": "输入参数",
+          "inputSchema": "输入模式",
           "availableTools": "可用工具",
-          "noToolsAvailable": "没有可用工具"
+          "noToolsAvailable": "无可用工具"
+        },
+        "prompts": {
+          "availablePrompts": "可用提示",
+          "noPromptsAvailable": "无可用提示",
+          "arguments": "参数",
+          "requiredField": "必填字段",
+          "genericError": "获取提示错误"
         },
         "deleteServer": "删除服务器",
         "deleteServerConfirm": "确定要删除此服务器吗？",
@@ -1106,6 +1127,7 @@
       "messages.input.send_shortcuts": "发送快捷键",
       "messages.input.show_estimated_tokens": "显示预估 Token 数",
       "messages.input.title": "输入设置",
+      "messages.input.enable_quick_triggers": "启用 '/' 和 '@' 触发快捷菜单",
       "messages.markdown_rendering_input_message": "Markdown 渲染输入消息",
       "messages.math_engine": "数学公式引擎",
       "messages.metrics": "首字时延 {{time_first_token_millsec}}ms | 每秒 {{token_speed}} tokens",
@@ -1272,17 +1294,27 @@
       "websearch": {
         "blacklist": "黑名单",
         "blacklist_description": "在搜索结果中不会出现以下网站的结果",
-        "blacklist_tooltip": "请使用以下格式(换行分隔)\nexample.com\nhttps://www.example.com\nhttps://example.com\n*://*.example.com",
+        "blacklist_tooltip": "请使用以下格式(换行分隔)\n匹配模式: *://*.example.com/*\n正则表达式: /example\\.(net|org)/",
         "check": "检查",
         "check_failed": "验证失败",
         "check_success": "验证成功",
         "enhance_mode": "搜索增强模式",
         "enhance_mode_tooltip": "使用默认模型提取关键词后搜索",
+        "overwrite": "覆盖服务商搜索",
+        "overwrite_tooltip": "强制使用搜索服务商而不是大语言模型进行搜索",
         "get_api_key": "点击这里获取密钥",
         "no_provider_selected": "请选择搜索服务商后再检查",
         "search_max_result": "搜索结果个数",
         "search_provider": "搜索服务商",
         "search_provider_placeholder": "选择一个搜索服务商",
+        "subscribe": "黑名单订阅",
+        "subscribe_update": "立即更新",
+        "subscribe_add": "添加订阅",
+        "subscribe_url": "订阅源地址",
+        "subscribe_name": "替代名字",
+        "subscribe_name.placeholder": "当下载的订阅源没有名称时所使用的替代名称",
+        "subscribe_add_success": "订阅源添加成功!",
+        "subscribe_delete": "删除订阅源",
         "search_result_default": "默认",
         "search_with_time": "搜索包含日期",
         "tavily": {
@@ -1291,7 +1323,9 @@
           "description": "Tavily 是一个为 AI 代理量身定制的搜索引擎，提供实时、准确的结果、智能查询建议和深入的研究能力",
           "title": "Tavily"
         },
-        "title": "网络搜索"
+        "title": "网络搜索",
+        "apikey": "API 密钥",
+        "free": "免费"
       },
       "quickPhrase": {
         "title": "快捷短语",

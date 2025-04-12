@@ -31,6 +31,10 @@ class WebSearchService {
       return false
     }
 
+    if (provider.id.startsWith('local-')) {
+      return true
+    }
+
     if (hasObjectKey(provider, 'apiKey')) {
       return provider.apiKey !== ''
     }
@@ -50,6 +54,16 @@ class WebSearchService {
   public isEnhanceModeEnabled(): boolean {
     const { enhanceMode } = this.getWebSearchState()
     return enhanceMode
+  }
+
+  /**
+   * 检查是否启用覆盖搜索
+   * @public
+   * @returns 如果启用覆盖搜索则返回true，否则返回false
+   */
+  public isOverwriteEnabled(): boolean {
+    const { overwrite } = this.getWebSearchState()
+    return overwrite
   }
 
   /**
@@ -83,16 +97,17 @@ class WebSearchService {
    * @returns 搜索响应
    */
   public async search(provider: WebSearchProvider, query: string): Promise<WebSearchResponse> {
-    const { searchWithTime, maxResults, excludeDomains } = this.getWebSearchState()
+    const websearch = this.getWebSearchState()
     const webSearchEngine = new WebSearchEngineProvider(provider)
 
     let formattedQuery = query
-    if (searchWithTime) {
+    // 有待商榷，效果一般
+    if (websearch.searchWithTime) {
       formattedQuery = `today is ${dayjs().format('YYYY-MM-DD')} \r\n ${query}`
     }
 
     try {
-      return await webSearchEngine.search(formattedQuery, maxResults, excludeDomains)
+      return await webSearchEngine.search(formattedQuery, websearch)
     } catch (error) {
       console.error('Search failed:', error)
       throw new Error(`Search failed: ${error instanceof Error ? error.message : 'Unknown error'}`)

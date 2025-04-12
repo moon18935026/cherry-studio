@@ -59,7 +59,7 @@
       "settings.reasoning_effort.low": "low",
       "settings.reasoning_effort.medium": "medium",
       "settings.reasoning_effort.off": "off",
-      "settings.reasoning_effort.tip": "Only supports OpenAI o-series and Anthropic reasoning models",
+      "settings.reasoning_effort.tip": "Only supported by OpenAI o-series, Anthropic, and Grok reasoning models",
       "settings.more": "Assistant Settings"
     },
     "auth": {
@@ -277,6 +277,7 @@
       "duplicate": "Duplicate",
       "edit": "Edit",
       "expand": "Expand",
+      "collapse": "Collapse",
       "footnote": "Reference content",
       "footnotes": "References",
       "fullscreen": "Entered fullscreen mode. Press F11 to exit",
@@ -298,7 +299,12 @@
       "topics": "Topics",
       "warning": "Warning",
       "you": "You",
-      "reasoning_content": "Deep reasoning"
+      "reasoning_content": "Deep reasoning",
+      "sort": {
+        "pinyin": "Sort by Pinyin",
+        "pinyin.asc": "Sort by Pinyin (A-Z)",
+        "pinyin.desc": "Sort by Pinyin (Z-A)"
+      }
     },
     "docs": {
       "title": "Docs"
@@ -550,7 +556,8 @@
       "switch.disabled": "Please wait for the current reply to complete",
       "tools": {
         "completed": "Completed",
-        "invoking": "Invoking"
+        "invoking": "Invoking",
+        "error": "Error occurred"
       },
       "topic.added": "New topic added",
       "upgrade.success.button": "Restart",
@@ -1027,8 +1034,9 @@
         "argsTooltip": "Each argument on a new line",
         "baseUrlTooltip": "Remote server base URL",
         "command": "Command",
-        "sse": "Server-Sent Events(sse)",
-        "stdio": "Standard Input/Output(stdio)",
+        "sse": "Server-Sent Events (sse)",
+        "streamableHttp": "Streamable HTTP (streamableHttp)",
+        "stdio": "Standard Input/Output (stdio)",
         "inMemory": "Memory",
         "config_description": "Configure Model Context Protocol servers",
         "deleteError": "Failed to delete server",
@@ -1082,10 +1090,23 @@
         "url": "URL",
         "editMcpJson": "Edit MCP Configuration",
         "installHelp": "Get Installation Help",
+        "tabs": {
+          "general": "General",
+          "tools": "Tools",
+          "prompts": "Prompts",
+          "resources": "Resources"
+        },
         "tools": {
           "inputSchema": "Input Schema",
           "availableTools": "Available Tools",
           "noToolsAvailable": "No tools available"
+        },
+        "prompts": {
+          "availablePrompts": "Available Prompts",
+          "noPromptsAvailable": "No prompts available",
+          "arguments": "Arguments",
+          "requiredField": "Required Field",
+          "genericError": "Get prompt Error"
         },
         "deleteServer": "Delete Server",
         "deleteServerConfirm": "Are you sure you want to delete this server?",
@@ -1106,6 +1127,7 @@
       "messages.input.send_shortcuts": "Send shortcuts",
       "messages.input.show_estimated_tokens": "Show estimated tokens",
       "messages.input.title": "Input Settings",
+      "messages.input.enable_quick_triggers": "Enable '/' and '@' triggers",
       "messages.markdown_rendering_input_message": "Markdown render input message",
       "messages.math_engine": "Math engine",
       "messages.metrics": "{{time_first_token_millsec}}ms to first token | {{token_speed}} tok/sec",
@@ -1291,7 +1313,19 @@
           "description": "Tavily is a search engine tailored for AI agents, delivering real-time, accurate results, intelligent query suggestions, and in-depth research capabilities.",
           "title": "Tavily"
         },
-        "title": "Web Search"
+        "title": "Web Search",
+        "subscribe": "Blacklist Subscription",
+        "subscribe_update": "Update now",
+        "subscribe_add": "Add Subscription",
+        "subscribe_url": "Subscription feed address",
+        "subscribe_name": "Alternative name",
+        "subscribe_name.placeholder": "Alternative name used when the downloaded subscription feed has no name.",
+        "subscribe_add_success": "Subscription feed added successfully!",
+        "subscribe_delete": "Delete subscription source",
+        "overwrite": "Override search service",
+        "overwrite_tooltip": "Force use search service instead of LLM",
+        "apikey": "API key",
+        "free": "Free"
       },
       "quickPhrase": {
         "title": "Quick Phrases",

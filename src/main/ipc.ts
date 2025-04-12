@@ -21,6 +21,7 @@ import mcpService from './services/MCPService'
 import * as NutstoreService from './services/NutstoreService'
 import ObsidianVaultService from './services/ObsidianVaultService'
 import { ProxyConfig, proxyManager } from './services/ProxyManager'
+import { searchService } from './services/SearchService'
 import { registerShortcuts, unregisterAllShortcuts } from './services/ShortcutService'
 import { TrayService } from './services/TrayService'
 import { windowService } from './services/WindowService'
@@ -193,18 +194,6 @@ export function registerIpc(mainWindow: BrowserWindow, app: Electron.App) {
   // fs
   ipcMain.handle(IpcChannel.Fs_Read, FileService.readFile)
 
-  // minapp
-  ipcMain.handle(IpcChannel.Minapp, (_, args) => {
-    windowService.createMinappWindow({
-      url: args.url,
-      parent: mainWindow,
-      windowOptions: {
-        ...mainWindow.getBounds(),
-        ...args.windowOptions
-      }
-    })
-  })
-
   // export
   ipcMain.handle(IpcChannel.Export_Word, exportService.exportToWord)
 
@@ -273,6 +262,8 @@ export function registerIpc(mainWindow: BrowserWindow, app: Electron.App) {
   ipcMain.handle(IpcChannel.Mcp_StopServer, mcpService.stopServer)
   ipcMain.handle(IpcChannel.Mcp_ListTools, mcpService.listTools)
   ipcMain.handle(IpcChannel.Mcp_CallTool, mcpService.callTool)
+  ipcMain.handle(IpcChannel.Mcp_ListPrompts, mcpService.listPrompts)
+  ipcMain.handle(IpcChannel.Mcp_GetPrompt, mcpService.getPrompt)
   ipcMain.handle(IpcChannel.Mcp_GetInstallInfo, mcpService.getInstallInfo)
 
   ipcMain.handle(IpcChannel.App_IsBinaryExist, (_, name: string) => isBinaryExists(name))
@@ -303,4 +294,15 @@ export function registerIpc(mainWindow: BrowserWindow, app: Electron.App) {
   ipcMain.handle(IpcChannel.Nutstore_GetDirectoryContents, (_, token: string, path: string) =>
     NutstoreService.getDirectoryContents(token, path)
   )
+
+  // search window
+  ipcMain.handle(IpcChannel.SearchWindow_Open, async (_, uid: string) => {
+    await searchService.openSearchWindow(uid)
+  })
+  ipcMain.handle(IpcChannel.SearchWindow_Close, async (_, uid: string) => {
+    await searchService.closeSearchWindow(uid)
+  })
+  ipcMain.handle(IpcChannel.SearchWindow_OpenUrl, async (_, uid: string, url: string) => {
+    return await searchService.openUrlInSearchWindow(uid, url)
+  })
 }

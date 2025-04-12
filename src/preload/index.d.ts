@@ -29,7 +29,6 @@ declare global {
       setTrayOnClose: (isActive: boolean) => void
       restartTray: () => void
       setTheme: (theme: 'light' | 'dark') => void
-      minApp: (options: { url: string; windowOptions?: Electron.BrowserWindowConstructorOptions }) => void
       reload: () => void
       clearCache: () => Promise<{ success: boolean; error?: string }>
       system: {
@@ -152,6 +151,16 @@ declare global {
         stopServer: (server: MCPServer) => Promise<void>
         listTools: (server: MCPServer) => Promise<MCPTool[]>
         callTool: ({ server, name, args }: { server: MCPServer; name: string; args: any }) => Promise<any>
+        listPrompts: (server: MCPServer) => Promise<MCPPrompt[]>
+        getPrompt: ({
+          server,
+          name,
+          args
+        }: {
+          server: MCPServer
+          name: string
+          args?: Record<string, any>
+        }) => Promise<GetMCPPromptResponse>
         getInstallInfo: () => Promise<{ dir: string; uvPath: string; bunPath: string }>
       }
       copilot: {
@@ -175,6 +184,11 @@ declare global {
         getSSOUrl: () => Promise<string>
         decryptToken: (token: string) => Promise<{ username: string; access_token: string }>
         getDirectoryContents: (token: string, path: string) => Promise<any>
+      }
+      searchService: {
+        openSearchWindow: (uid: string) => Promise<string>
+        closeSearchWindow: (uid: string) => Promise<string>
+        openUrlInSearchWindow: (uid: string, url: string) => Promise<string>
       }
     }
   }
