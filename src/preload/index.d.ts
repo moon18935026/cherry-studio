@@ -1,7 +1,7 @@
 import { ExtractChunkData } from '@cherrystudio/embedjs-interfaces'
 import { ElectronAPI } from '@electron-toolkit/preload'
-import type { FileMetadataResponse, ListFilesResponse, UploadFileResponse } from '@google/generative-ai/server'
-import type { MCPServer, MCPTool } from '@renderer/types'
+import type { File } from '@google/genai'
+import type { GetMCPPromptResponse, MCPPrompt, MCPResource, MCPServer, MCPTool } from '@renderer/types'
 import { AppInfo, FileType, KnowledgeBaseParams, KnowledgeItem, LanguageVarious, WebDavConfig } from '@renderer/types'
 import type { LoaderReturn } from '@shared/config/types'
 import type { OpenDialogOptions } from 'electron'
@@ -29,10 +29,13 @@ declare global {
       setTrayOnClose: (isActive: boolean) => void
       restartTray: () => void
       setTheme: (theme: 'light' | 'dark') => void
+      setCustomCss: (css: string) => void
+      setAutoUpdate: (isActive: boolean) => void
       reload: () => void
       clearCache: () => Promise<{ success: boolean; error?: string }>
       system: {
         getDeviceType: () => Promise<'mac' | 'windows' | 'linux'>
+        getHostname: () => Promise<string>
       }
       zip: {
         compress: (text: string) => Promise<Buffer>
@@ -46,6 +49,7 @@ declare global {
         listWebdavFiles: (webdavConfig: WebDavConfig) => Promise<BackupFile[]>
         checkConnection: (webdavConfig: WebDavConfig) => Promise<boolean>
         createDirectory: (webdavConfig: WebDavConfig, path: string, options?: CreateDirectoryOptions) => Promise<void>
+        deleteWebdavFile: (fileName: string, webdavConfig: WebDavConfig) => Promise<boolean>
       }
       file: {
         select: (options?: OpenDialogOptions) => Promise<FileType[] | null>
@@ -118,11 +122,11 @@ declare global {
         resetMinimumSize: () => Promise<void>
       }
       gemini: {
-        uploadFile: (file: FileType, apiKey: string) => Promise<UploadFileResponse>
-        retrieveFile: (file: FileType, apiKey: string) => Promise<FileMetadataResponse | undefined>
+        uploadFile: (file: FileType, apiKey: string) => Promise<File>
+        retrieveFile: (file: FileType, apiKey: string) => Promise<File | undefined>
         base64File: (file: FileType) => Promise<{ data: string; mimeType: string }>
-        listFiles: (apiKey: string) => Promise<ListFilesResponse>
-        deleteFile: (apiKey: string, fileId: string) => Promise<void>
+        listFiles: (apiKey: string) => Promise<File[]>
+        deleteFile: (fileId: string, apiKey: string) => Promise<void>
       }
       selectionMenu: {
         action: (action: string) => Promise<void>
@@ -150,7 +154,15 @@ declare global {
         restartServer: (server: MCPServer) => Promise<void>
         stopServer: (server: MCPServer) => Promise<void>
         listTools: (server: MCPServer) => Promise<MCPTool[]>
-        callTool: ({ server, name, args }: { server: MCPServer; name: string; args: any }) => Promise<any>
+        callTool: ({
+          server,
+          name,
+          args
+        }: {
+          server: MCPServer
+          name: string
+          args: any
+        }) => Promise<MCPCallToolResponse>
         listPrompts: (server: MCPServer) => Promise<MCPPrompt[]>
         getPrompt: ({
           server,
@@ -161,6 +173,8 @@ declare global {
           name: string
           args?: Record<string, any>
         }) => Promise<GetMCPPromptResponse>
+        listResources: (server: MCPServer) => Promise<MCPResource[]>
+        getResource: ({ server, uri }: { server: MCPServer; uri: string }) => Promise<GetResourceResponse>
         getInstallInfo: () => Promise<{ dir: string; uvPath: string; bunPath: string }>
       }
       copilot: {

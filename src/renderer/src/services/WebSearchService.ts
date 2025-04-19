@@ -1,8 +1,10 @@
 import WebSearchEngineProvider from '@renderer/providers/WebSearchProvider'
 import store from '@renderer/store'
 import { setDefaultProvider, WebSearchState } from '@renderer/store/websearch'
-import { WebSearchProvider, WebSearchResponse } from '@renderer/types'
+import { WebSearchProvider, WebSearchResponse, WebSearchResult } from '@renderer/types'
 import { hasObjectKey } from '@renderer/utils'
+import { ExtractResults } from '@renderer/utils/extract'
+import { fetchWebContents } from '@renderer/utils/fetch'
 import dayjs from 'dayjs'
 
 /**
@@ -128,6 +130,49 @@ class WebSearchService {
       return { valid: response.results !== undefined, error: undefined }
     } catch (error) {
       return { valid: false, error }
+    }
+  }
+
+  public async processWebsearch(
+    webSearchProvider: WebSearchProvider,
+    extractResults: ExtractResults
+  ): Promise<WebSearchResponse> {
+    try {
+      // 检查 websearch 和 question 是否有效
+      if (!extractResults.websearch?.question || extractResults.websearch.question.length === 0) {
+        console.log('No valid question found in extractResults.websearch')
+        return { results: [] }
+      }
+
+      const questions = extractResults.websearch.question
+      const links = extractResults.websearch.links
+      const firstQuestion = questions[0]
+
+      if (firstQuestion === 'summarize' && links && links.length > 0) {
+        const contents = await fetchWebContents(links)
+        return {
+          query: 'summaries',
+          results: contents
+        }
+      }
+      const searchPromises = questions.map((q) => this.search(webSearchProvider, q))
+      const searchResults = await Promise.allSettled(searchPromises)
+      const aggregatedResults: WebSearchResult[] = []
+
+      searchResults.forEach((result) => {
+        if (result.status === 'fulfilled') {
+          if (result.value.results) {
+            aggregatedResults.push(...result.value.results)
+          }
+        }
+      })
+      return {
+        query: questions.join(' | '),
+        results: aggregatedResults
+      }
+    } catch (error) {
+      console.error('Failed to process enhanced search:', error)
+      return { results: [] }
     }
   }
 }
